@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import GoogleSVG from "../../images/Google.svg";
 import FacebookSVG from "../../images/Facebook.svg";
@@ -41,7 +42,7 @@ function SignIn() {
                             <img src={Github} alt="github icon" />
                         </div>
 
-                        <p>Don't have an account yet? <span>Register</span></p>
+                        <p>Don't have an account yet? <Link to="/">Register</Link></p>
                     </section>
 
                 </section>
