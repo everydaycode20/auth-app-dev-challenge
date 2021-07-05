@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { Link } from "react-router-dom";
 
 import "../../styles/profile.scss";
 
@@ -42,7 +43,7 @@ function Profile() {
                         <h2>Profile</h2>
                         <p>Some info may be visible to other people</p>
                     </div>
-                    <a href="/">Edit</a>
+                    <Link to="/edit">Edit</Link>
                 </div>
                 <div className="profile-img">
                     <h3>PHOTO</h3>

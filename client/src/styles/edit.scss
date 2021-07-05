@@ -73,13 +73,17 @@
     row-gap: 40px;
 
     .back{
+        
         width: 90%;
         margin-top: 20px;
 
-        p{
-            align-self: flex-start;
+        a{
+            text-decoration: none;
+            color: black;
+            display: flex;
+            flex-direction: row;
+            width: fit-content;
         }
-        
     }
 
     .profile-inner-container{
@@ -113,43 +117,11 @@
             font-weight: 500;
         }
 
-        .profile-edit{
+        .profile-img{
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-
-            div{
-                width: 50%;
-
-                h2{
-                    font-size: 1.5rem;
-                    font-weight: 500;
-                }
-
-                p{
-                    font-size: 0.8rem;
-                    color: #828282;
-                    font-weight: 400;
-                }
-            }
-
-            a{
-                border: 1px solid #828282;
-                border-radius: 12px;
-                font-size: 0.9rem;
-                color: #828282;
-                text-decoration: none;
-                padding: 6px 25px;
-            }
-        }
-
-        .profile-img, .profile-name, .profile-bio, .profile-email, .profile-pass{
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 20px;
 
             .img-container{
                 width: 70px;
@@ -173,6 +145,13 @@
                     height: 100%;
                     background-color: black;
                     border-radius: 5px;
+                    display: flex;
+                    justify-content: center;
+
+                    img{
+                        width: 60%;
+                        cursor: pointer;
+                    }
 
                     &:hover{
                         opacity: 1;
@@ -186,6 +165,45 @@
 
             p{
                 font-size: 1rem;
+            }
+        }
+
+        .form-container{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            row-gap: 15px;
+
+            .form{
+                display: flex;
+                flex-direction: column;
+                row-gap: 5px;
+
+                textarea, input{
+                    width: 100%;
+                    border-radius: 5px;
+                    border: 1.8px solid #BDBDBD;
+                    font-size: 1rem;
+                    padding: 7px;
+                    resize: none;
+                }
+
+                textarea{
+                    height: 150px;
+                }
+            }
+
+            .btn{
+                border-bottom: 2px solid #E0E0E0;
+                background-color: #2F80ED;
+                border: none;
+                border-radius: 5px;
+                color: white;
+                font-size: 1rem;
+                padding: 5px 15px;
+                cursor: pointer;
+                margin-bottom: 15px;
+                width: fit-content;
             }
         }
     }
@@ -209,116 +227,88 @@
         }
 
         .profile-options{
-            margin-right: 50px;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-content: center;
-            align-items: center;
-            margin-top: 0;
-            column-gap: 10px;
-
-            img{
-                width: 45px;
-                height: 45px;
-                object-fit: cover;
-                object-position: center;
-                border-radius: 5px;
-            }
     
             span{
                 display: block;
-                font-size: 0.75rem;
-                font-weight: 500;
             }
     
             .triangle{
                 display: block;
-                transition: 0.3s ease-in;
             }
         }
     }
     
-    .profile-main{
-    
-        .profile-msg{
-    
-            h1{
-                font-size: 1.5rem;
-                font-weight: 500;
-            }
-    
-            p{
-                font-size: 0.9rem;
-                font-weight: 300;
-            }
-        }
+    .profile-main-container{
     
         .profile-inner-container{
             display: flex;
             flex-direction: column;
+            grid-row-gap: 5px;
             row-gap: 5px;
             width: 90%;
             border: 2px solid #E0E0E0;
             border-radius: 12px;
 
-            .profile-edit{
+            .profile-msg{
                 padding: 15px 25px;
-                border-bottom: 2px solid #E0E0E0;
             }
     
-            .profile-img, .profile-name, .profile-bio, .profile-email{
-                border-bottom: 2px solid #E0E0E0;
-                padding: 20px 25px;
-                justify-content: flex-start;
-                column-gap: 100px;
-
-                h3{
-                    width: 20%;
-                }
-
-                p{
-                    text-align: left;
-                    width: 80%;
-                }
-
-                .img-container{
-                    width: 80%;
-                    height: 70px;
+            h3{
+                color: #BDBDBD;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
     
-                    img{
-                        width: 70px;
-                        height: 100%;
-                        border-radius: 5px;
+            .profile-edit{
+                padding: 15px 25px;
+
+                div{
+                    width: 50%;
+    
+                    h2{
+                        font-size: 1.5rem;
+                        font-weight: 500;
+                    }
+    
+                    p{
+                        font-size: 0.8rem;
+                        color: #828282;
+                        font-weight: 400;
                     }
                 }
             }
-
-            .profile-pass{
-                border-bottom: 0px solid #E0E0E0;
-                padding: 20px 25px;
-                column-gap: 100px;
-                align-items: center;
-
-                h3{
-                    width: 20%;
-                }
-
-                p{
-                    text-align: left;
-                    width: 80%;
-                }
+    
+            .profile-img{
+                padding: 15px 25px;
+                justify-content: flex-start;
+                column-gap: 25px;
             }
     
+            .form-container{
+                padding: 15px 25px;
+    
+                .form{
+    
+                    textarea, input{
+                        width: 55%;
+                    }
+                }
+            }
         }
-    }   
+    }
+
 }
 
 
 @media only screen and (min-width: 768px) {
-    .profile-main{   
+    .profile-main-container{
+
+        .back{
+            width: 750px;
+        }
+
         .profile-inner-container{
-            width: 650px;
+            width: 750px;
         }
     }   
 }

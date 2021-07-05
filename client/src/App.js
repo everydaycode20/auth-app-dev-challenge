@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import SignUp from "./components/signup/signup";
 import SignIn from "./components/signin/signin";
@@ -10,10 +10,22 @@ function App() {
 
   return (
     <>
-      {/* <SignUp /> */}
-      {/* <SignIn /> */}
-      {/* <Profile /> */}
-      <Edit />
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <SignUp />
+          </Route>
+          <Route path="/signin">
+            <SignIn />
+          </Route>
+          <Route path="/profile">
+            <Profile />
+          </Route>
+          <Route path="/edit">
+            <Edit />
+          </Route>
+        </Switch>
+      </Router>
     </>
   );
 }
