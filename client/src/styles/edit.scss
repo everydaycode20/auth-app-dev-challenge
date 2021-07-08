@@ -64,7 +64,7 @@
 }
 
 .profile-main-container{
-    width: 100vw;
+    // width: 100vw;
     height: calc(100vh - 60px);
     display: flex;
     flex-direction: column;
@@ -152,7 +152,7 @@
                         width: 60%;
                         cursor: pointer;
                     }
-
+                    
                     &:hover{
                         opacity: 1;
                         background-color: rgba(0, 0, 0, 0.267);
@@ -309,6 +309,7 @@
 
         .profile-inner-container{
             width: 750px;
+            margin-bottom: 20px;
         }
     }   
 }

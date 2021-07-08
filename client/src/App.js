@@ -6,10 +6,17 @@ import SignIn from "./components/signin/signin";
 import Profile from "./components/profile/profile";
 import Edit from "./components/edit/edit";
 
+import { GoogleAuthContext } from "./components/utils/auth_context";
+import { useAuth } from "./components/utils/useAuth";
+
 function App() {
 
+  const googleAuth = useAuth().useGoogleAuth();
+  const githubAuth = useAuth().useAuthGithub();
+  
   return (
     <>
+    <GoogleAuthContext.Provider value={{googleAuth, githubAuth}}>
       <Router>
         <Switch>
           <Route exact path="/">
@@ -26,6 +33,7 @@ function App() {
           </Route>
         </Switch>
       </Router>
+    </GoogleAuthContext.Provider>
     </>
   );
 }
