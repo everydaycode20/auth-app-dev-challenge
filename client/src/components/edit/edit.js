@@ -1,6 +1,8 @@
 import React, {useState, useContext, useEffect} from "react";
 import { Link, Redirect } from "react-router-dom";
 
+import EditComp from "./edit_comp";
+
 import { GoogleAuthContext } from "../utils/auth_context";
 
 import "../../styles/edit.scss";
@@ -9,9 +11,7 @@ import PhotoCamera from "../../images/photo_camera.svg";
 
 function Edit() {
     
-    const {auth} = useContext(GoogleAuthContext);
-
-    const [dropdown, setDropdown] = useState(false);
+    const {googleAuth, githubAuth} = useContext(GoogleAuthContext);
 
     const [isAllowed, setIsAllowed] = useState(null);
 
@@ -27,45 +27,85 @@ function Edit() {
 
     const [provider, setProvider] = useState("");
 
-    function showDropdown() {
-        setDropdown(true);
-
-        if (dropdown) {
-            setDropdown(false)
-        }
-    }
+    const [showMessage, setShowMessage] = useState(false);
     
     useEffect(() => {
         
-        console.log("status profile");
-        console.log(auth.status);
-        
-        if (auth.status !== null && auth.status === true) {
-            console.log("true");
-            setIsAllowed(true);
-            console.log(auth.user);
-            setUser(auth.user);
-            setName(auth.user.name);
-            setBio(auth.user.bio);
-            setEmail(auth.user.email);
-            setPhone(auth.user.phone);
-            setProvider(auth.user.provider);
+        const provider = sessionStorage.getItem("provider");
+
+        if (provider === "google.com") {
+            if (googleAuth.status !== null && googleAuth.status === true) {
+                console.log("true");
+                setIsAllowed(true);
+                console.log(googleAuth.user);
+                setUser(googleAuth.user);
+                setName(googleAuth.user.name);
+                setBio(googleAuth.user.bio);
+                setEmail(googleAuth.user.email);
+                setPhone(googleAuth.user.phone);
+                setProvider(googleAuth.user.provider);
+            }
+            else if(googleAuth.status !== null && googleAuth.status === false){
+                setIsAllowed(false);
+            }
         }
-        else if(auth.status !== null && auth.status === false){
-            console.log("false");
-            setIsAllowed(false);
+        else{
+            if (githubAuth.status !== null && githubAuth.status === true) {
+                setIsAllowed(true);
+                setUser(githubAuth.user);
+                setName(githubAuth.user.name);
+                setBio(githubAuth.user.bio);
+                setEmail(githubAuth.user.email);
+                setPhone(githubAuth.user.phone);
+                setProvider(githubAuth.user.provider);
+            }
+            else if(githubAuth.status !== null && githubAuth.status === false){
+                setIsAllowed(false);
+            }
         }
 
-    }, [auth.status, auth.user]);
+    }, [googleAuth.status, googleAuth.user, githubAuth.status, githubAuth.user]);
 
     useEffect(() => {
-        auth.checkAuth();
+        const provider = sessionStorage.getItem("provider");
+
+        if (provider === "google.com") {
+            googleAuth.checkAuth();
+        }
+        else{
+            githubAuth.checkAuth();
+        }
     }, []);
 
     function editProfile(e) {
+        const provider = sessionStorage.getItem("provider");
+
         e.preventDefault();
 
-        auth.edit(name, bio, phone, email, auth.user.id);
+        if (provider === "google.com") {
+            googleAuth.edit(name, bio, phone, email, googleAuth.user.id).then(data => {
+                console.log(data);
+                if (data.status === true) {
+                    setShowMessage(true);
+
+                    setTimeout(() => {
+                        setShowMessage(false);
+                    }, 3000);
+                }
+            });
+        }
+        else{
+            githubAuth.edit(name, bio, phone, email, githubAuth.user.id).then(data => {
+                console.log(data);
+                if (data.status === true) {
+                    setShowMessage(true);
+
+                    setTimeout(() => {
+                        setShowMessage(false);
+                    }, 3000);
+                }
+            });
+        }
     }
     
     if (isAllowed === false && isAllowed !== null) {
@@ -74,69 +114,7 @@ function Edit() {
     
     if (isAllowed === true && isAllowed !== null) {
         return (
-            <>
-                <header className="profile-header">
-                    <div onClick={() => showDropdown(true)} className="profile-options">
-                        <img src={user.photo} alt="profile" />
-                        <span>{user.name}</span>
-                        <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
-                    </div>
-                    {dropdown && <div className="dropdown">
-                        <div>
-                            <p>My Profile</p>
-                        </div>
-                        <div>
-                            <p>Logout</p>
-                        </div>
-                    </div>}
-                </header>
-                <main className="profile-main-container">
-                    <div className="back">
-                        <Link to="/profile">
-                            <img src={Back} alt="back"/>
-                            <p>Back</p>
-                        </Link>
-                    </div>
-                    <section className="profile-inner-container">
-                        <div className="profile-msg">
-                            <h1>Change info</h1>
-                            <p>Changes will be reflected to every services</p>
-                        </div>
-                        <div className="profile-img">
-                            <div className="img-container">
-                                <img src={user.photo} alt="profile" />
-                                <div className="overlay">
-                                    <img src={PhotoCamera} alt="camera" />
-                                </div>
-                            </div>
-                            <h3>CHANGE PHOTO</h3>
-                        </div>
-                        <form className="form-container" onSubmit={e => editProfile(e)}>
-                            <div className="form">
-                                <label htmlFor="">Name</label>
-                                <input type="text" defaultValue={name} placeholder="enter your name" onChange={e => setName(e.target.value)}/>
-                            </div>
-                            <div className="form">
-                                <label htmlFor="bio">Bio</label>
-                                <textarea id="bio" defaultValue={bio} placeholder="enter your bio" onChange={e => setBio(e.target.value)}/>
-                            </div>
-                            <div className="form">
-                                <label htmlFor="phone">phone</label>
-                                <input id="phone" defaultValue={phone} type="tel" onChange={e => setPhone(e.target.value)}/>
-                            </div>
-                            <div className="form">
-                                <label htmlFor="email">Email</label>
-                                <input id="email" type="text" defaultValue={email} placeholder="example@example.com" onChange={e => setEmail(e.target.value)}/>
-                            </div>
-                            {provider !== "google.com" && <div className="form">
-                                <label htmlFor="password">Password</label>
-                                <input id="password" type="password" placeholder="enter your new password"/>
-                            </div>}
-                            <button type="submit" className="btn">Save</button>
-                        </form>
-                    </section>
-                </main>
-            </>
+            <EditComp user={user} name={name} setName={setName} bio={bio} setBio={setBio} phone={phone} setPhone={setPhone} email={email} setEmail={setEmail} provider={provider} showMessage={showMessage} editProfile={editProfile}/>
         )
     }
 

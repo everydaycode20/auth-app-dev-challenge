@@ -38,11 +38,9 @@ function SignUp() {
 
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
-        console.log(provider);
         
         if (provider === "google.com") {
             if (googleAuth.status !== null && googleAuth.status === true) {
-                console.log(googleAuth.status, "STATUS");
                 setIsSignedIn(true);
             }
             else if(googleAuth.status !== null && googleAuth.status === false){
@@ -51,7 +49,6 @@ function SignUp() {
         }
         else{
             if (githubAuth.status !== null && githubAuth.status === true) {
-                console.log(googleAuth.status, "STATUS");
                 setIsSignedIn(true);
             }
             else if(githubAuth.status !== null && githubAuth.status === false){
@@ -61,16 +58,19 @@ function SignUp() {
     }, [googleAuth.status, githubAuth.status]);
 
     useEffect(() => {
-        console.log("signup auth");
+        const provider = sessionStorage.getItem("provider");
+        console.log(provider, "UE");
         googleAuth.checkAuth();
         githubAuth.checkAuth();
     }, []);
 
     function googleSignIn() {
+        sessionStorage.setItem("provider", "google.com")
         googleAuth.signIn();
     }
     
     function githubSignIn() {
+        sessionStorage.setItem("provider", "github.com")
         githubAuth.signIn();
     }
 
@@ -104,8 +104,6 @@ function SignUp() {
     
                             <div className="icons">
                                 <img src={GoogleSVG} alt="google icon" onClick={() => googleSignIn()} />
-                                <img src={FacebookSVG} alt="facebook icon" />
-                                <img src={Twitter} alt="twitter icon" />
                                 <img src={Github} alt="github icon" onClick={() => githubSignIn()}/>
                             </div>
     

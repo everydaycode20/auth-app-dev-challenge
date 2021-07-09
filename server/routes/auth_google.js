@@ -7,7 +7,7 @@ const google_admin = require("../utils/google_admin");
 const admin = google_admin();
 
 routerGoogleAuth.post("/google-signin", (req, res, next) => {
-
+    console.log("AUTH GOOGLE");
     const idToken = req.body.idToken.toString();
 
     const expiresIn = 60 * 60 * 1000;
@@ -22,13 +22,14 @@ routerGoogleAuth.post("/google-signin", (req, res, next) => {
     });
 });
 
-routerGoogleAuth.get("/logout", (req, res, next) => {
+routerGoogleAuth.get("/google-logout", (req, res, next) => {
     const sessionCookie = req.cookies.session || '';
 
     res.clearCookie("session");
 
     if (sessionCookie) {
         admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
+            console.log(decodedClaims, "32");
             return admin.auth().revokeRefreshTokens(decodedClaims.sub);
         }).then(() => {
             
@@ -38,13 +39,10 @@ routerGoogleAuth.get("/logout", (req, res, next) => {
 });
 
 routerGoogleAuth.get("/google/profile", (req, res, next) => {
-    // console.log(req.cookies);
+
     const sessionCookie = req.cookies.session || '';
 
-    // console.log(sessionCookie);
-
     admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
-        console.log(decodedClaims);
 
         const {uid, email, name, picture} = decodedClaims;
         const {sign_in_provider} = decodedClaims.firebase;
@@ -61,6 +59,8 @@ routerGoogleAuth.get("/google/profile", (req, res, next) => {
                 });
 
                 user.save().catch(err => console.log(err));
+
+                res.json({"status": true, "user": {"id": uid, name, "photo": picture, "bio": "", "phone": "", email, "provider":  sign_in_provider}});
             }
             else{
                 const {name, photo, bio, phone, email} = user;
@@ -69,7 +69,6 @@ routerGoogleAuth.get("/google/profile", (req, res, next) => {
             }
         });
 
-        // res.json({"status": true });
     }).catch(error => {
         res.json({"status": false});
         console.log(error);
@@ -78,7 +77,7 @@ routerGoogleAuth.get("/google/profile", (req, res, next) => {
 });
 
 routerGoogleAuth.post("/google-edit", (req, res, next) => {
-    // console.log(req.body);
+    
     const {id, name, bio, phone, email} = req.body;
 
     User.findOne({id: id}).then(user => {

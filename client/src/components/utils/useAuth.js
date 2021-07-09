@@ -26,6 +26,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 export function useAuth() {
 
     /**
+     * Google Authentication method
      * 
      * @returns status, user, signIn, checkAuth, logout, edit
      * 
@@ -66,9 +67,7 @@ export function useAuth() {
                         setStatus(status.status);
                         sessionStorage.setItem("provider", status.provider)
                     });
-                    
                 });
-                
             });
         }
         
@@ -79,36 +78,40 @@ export function useAuth() {
          */
 
         function checkAuth() {
-
+            
             fetch("/auth/google/profile", {credentials: "include", withCredentials: true}).then(res => res.json()).then(data => {
                 const {user} = data;
                 console.log(data.user);
-                setStatus(data.status);
                 setUser(user);
+                setStatus(data.status);
                 
             });
         }
         
         function logout() {
-            fetch("/auth/logout", {credentials: "include"}).then(res => res.json()).then(status => {
+            fetch("/auth/google-logout", {credentials: "include"}).then(res => res.json()).then(status => {
                 console.log(status);
                 setStatus(status.status);
             });
         }
 
         function edit(name, bio, phone, email, id) {
-            
-            fetch("/auth/google-edit", {
-                method: "POST",
-                credentials: "include",
-                body: JSON.stringify({"id": id, "name": name, "bio": bio, "phone": phone, "email": email}),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }).then(res => res.json()).then(data => {
-                console.log(data);
-            })
+            return new Promise((resolve, reject) => {
+                fetch("/auth/google-edit", {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify({"id": id, "name": name, "bio": bio, "phone": phone, "email": email}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(res => res.json()).then(data => {
+                    // console.log(data);
+                    resolve(data);
+                })
+            });
         }
+
+
 
         return {
             status,
@@ -121,6 +124,7 @@ export function useAuth() {
     }
     
     /**
+     * Github Authentication method
      * 
      * @returns status, user, signIn, checkAuth, logout, edit
      * 
@@ -139,19 +143,20 @@ export function useAuth() {
             firebase.auth().signInWithPopup(provider).then(result => {
                 console.log(result);
                 const {accessToken} = result.credential;
+                const {username} = result.additionalUserInfo;
 
                 result.user.getIdToken().then(idToken => {
-                    console.log(idToken);
+                    
                     fetch("/auth/github-signin", {
                         method: "POST",
                         credentials: "include",
-                        body: JSON.stringify({"idToken": idToken, "csrfToken": accessToken}),
+                        body: JSON.stringify({"idToken": idToken, "csrfToken": accessToken, "user": username
+                    }),
                         headers: {
                             "Content-Type": "application/json"
                         },
                     }).then(res => res.json()).then(status => {
-                        console.log(status);
-                        console.log("AUTH GITHUB");
+                        
                         setStatus(status.status);
                         sessionStorage.setItem("provider", status.provider)
                     });
@@ -163,9 +168,32 @@ export function useAuth() {
 
             fetch("/auth/github/profile", {credentials: "include", withCredentials: true}).then(res => res.json()).then(data => {
                 const {user} = data;
-                console.log(data.user);
+                
                 setStatus(data.status);
                 setUser(user); 
+            });
+        }
+
+        function logout() {
+            fetch("/auth/github-logout", {credentials: "include"}).then(res => res.json()).then(status => {
+                
+                setStatus(status.status);
+            });
+        }
+
+        function edit(name, bio, phone, email, id) {
+            return new Promise((resolve, reject) => {
+                fetch("/auth/github-edit", {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify({"id": id, "name": name, "bio": bio, "phone": phone, "email": email}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(res => res.json()).then(data => {
+                    
+                    resolve(data);
+                }).catch(err => reject(err));
             });
         }
 
@@ -174,6 +202,8 @@ export function useAuth() {
             user,
             signIn,
             checkAuth,
+            logout,
+            edit
         }
     }
 

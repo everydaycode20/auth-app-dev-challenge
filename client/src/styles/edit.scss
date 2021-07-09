@@ -209,6 +209,51 @@
     }
 }
 
+.message{
+    position: fixed;
+    top: 120px;
+    right: 50px;
+    background-color: #E35444;
+    padding: 10px;
+    border-radius: 5px;
+    animation: messageAnim 2.8s cubic-bezier(0.54, -0.16, 1, 0.65) forwards;
+
+    p{
+        color: white;
+    }
+}
+
+@keyframes messageAnim {
+    0% {
+        transform: translateY(-15px);
+        opacity: 0;
+    }
+    22% {
+        opacity: 1;
+        transform: translateY(18px);
+    }
+    25% {
+        opacity: 1;
+        transform: translateY(15px);
+    }
+    50%{
+        opacity: 1;
+        transform: translateY(15px);
+    }
+    75% {
+        opacity: 1;
+        transform: translateY(15px);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(20px);
+    }
+    100% {
+        transform: translateY(-15px);
+        opacity: 0;
+    }
+}
+
 @keyframes opacityDropdown {
     from {
         opacity: 0;

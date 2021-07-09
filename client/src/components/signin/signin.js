@@ -54,7 +54,7 @@ function SignIn() {
                     <section className="signup-inner-container">
                         <div className="intro">
                             <p>Join thousands of learners from around the world</p>
-                            <p>Master web development by making real-life projects. There are multiple paths for you yo choose</p>
+                            <p>Master web development by making real-life projects. There are multiple paths for you to choose</p>
                         </div>
                         <form className="form" action="">
                             <div className="email-form">
@@ -74,8 +74,6 @@ function SignIn() {
     
                             <div className="icons">
                                 <img src={GoogleSVG} alt="google icon" onClick={() => googleSignIn()}/>
-                                <img src={FacebookSVG} alt="facebook icon" />
-                                <img src={Twitter} alt="twitter icon" />
                                 <img src={Github} alt="github icon" />
                             </div>
     

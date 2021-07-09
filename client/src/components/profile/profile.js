@@ -1,6 +1,8 @@
 import React, {useState, useEffect, useContext} from "react";
 import {  Link, Redirect } from "react-router-dom";
 
+import ProfileComp from "./profile_comp";
+
 import { GoogleAuthContext } from "../utils/auth_context";
 
 import "../../styles/profile.scss";
@@ -15,6 +17,8 @@ function Profile() {
 
     const [user, setUser] = useState({});
 
+    const [bio, setBio] = useState("");
+
     function showDropdown() {
         setDropdown(true);
 
@@ -22,42 +26,48 @@ function Profile() {
             setDropdown(false)
         }
     }
-    debugger;
     
     useEffect(() => {
-        googleAuth.checkAuth();
-        githubAuth.checkAuth();
+        const provider = sessionStorage.getItem("provider");
+
+        if (provider === "google.com") {
+            googleAuth.checkAuth();
+        }
+        else{
+            githubAuth.checkAuth();
+        }
     }, []);
 
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
-        console.log(provider);
-
-        console.log("status profile");
-        console.log(googleAuth.status);
         
         if (provider === "google.com") {
             if (googleAuth.status !== null && googleAuth.status === true ) {
-                console.log("true");
+                
                 setIsAllowed(true);
-                console.log(googleAuth.user);
-                if (googleAuth.user !== undefined) {
+                
+                if (googleAuth.user !== undefined && Object.keys(googleAuth.user).length !== 0) {
+                    let userBio = googleAuth.user.bio;
+
+                    setBio(`${userBio.substring(0,50)}...`);
                     setUser(googleAuth.user);
                 }
-            
-                console.log(googleAuth.user, "USER");
             }
             else if(googleAuth.status !== null && googleAuth.status === false){
-                console.log("false");
                 setIsAllowed(false);
             }
         }
         else{
             if (githubAuth.status !== null && githubAuth.status === true ) {
-                console.log("true");
+                
                 setIsAllowed(true);
-                console.log(googleAuth.user);
-                if (githubAuth.user !== undefined) {
+                
+                if (githubAuth.user !== undefined && Object.keys(githubAuth.user).length !== 0) {
+                    
+                    let userBio = githubAuth.user.bio;
+
+                    setBio(`${userBio.substring(0,50)}...`);
+                    
                     setUser(githubAuth.user);
                 }
             
@@ -68,12 +78,17 @@ function Profile() {
                 setIsAllowed(false);
             }
         }
-        
-
-    }, [googleAuth.status, googleAuth.user, githubAuth.status, githubAuth.user, ]);
+    }, [googleAuth.status, googleAuth.user, githubAuth.status, githubAuth.user]);
 
     function logout() {
-        googleAuth.logout();
+        const provider = sessionStorage.getItem("provider");
+        
+        if (provider === "google.com") {
+            googleAuth.logout();
+        }
+        else{
+            githubAuth.logout();
+        }
         
     }
 
@@ -83,60 +98,7 @@ function Profile() {
 
     if (isAllowed === true && isAllowed !== null) {
         return (
-            <>
-            <header className="profile-header">
-                <div onClick={() => showDropdown(true)} className="profile-options">
-                    <img src={user.photo} alt="profile" />
-                    <span>{user.name}</span>
-                    <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
-                </div>
-                {dropdown && <div className="dropdown">
-                    <div>
-                        <p>My Profile</p>
-                    </div>
-                    <div onClick={() => logout()}>
-                        <p>Logout</p>
-                    </div>
-                </div>}
-            </header>
-            <main className="profile-main">
-                <div className="profile-msg">
-                    <h1>Personal info</h1>
-                    <p>Basic info, like your name and photo</p>
-                </div>
-                <section className="profile-inner-container">
-                    <div className="profile-edit">
-                        <div>
-                            <h2>Profile</h2>
-                            <p>Some info may be visible to other people</p>
-                        </div>
-                        <Link to="/edit">Edit</Link>
-                    </div>
-                    <div className="profile-img">
-                        <h3>PHOTO</h3>
-                        <div className="img-container">
-                            <img src={user.photo} alt="profile" />
-                        </div>
-                    </div>
-                    <div className="profile-name">
-                        <h3>NAME</h3>
-                        <p>{user.name}</p>
-                    </div>
-                    <div className="profile-bio">
-                        <h3>BIO</h3>
-                        <p>{user.bio}</p>
-                    </div>
-                    <div className="profile-email">
-                        <h3>EMAIL</h3>
-                        <p>{user.email}</p>
-                    </div>
-                    <div className="profile-pass">
-                        <h3>PASSWORD</h3>
-                        <p>*********</p>
-                    </div>
-                </section>
-            </main>
-            </>
+            <ProfileComp user={user} logout={logout} bio={bio}/>
         );
     }
 

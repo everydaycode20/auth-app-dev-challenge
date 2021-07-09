@@ -6,10 +6,13 @@ const User = require("../models/client").User;
 const google_admin = require("../utils/google_admin");
 const admin = google_admin();
 
-routerGithubAuth.post("/github-signin", (req, res, next) => {
+let nameUser = "";
 
+routerGithubAuth.post("/github-signin", (req, res, next) => {
+    console.log("AUTH GITHUB");
     const idToken = req.body.idToken.toString();
     console.log("github signin");
+    nameUser = req.body.user;
     const expiresIn = 60 * 60 * 1000;
 
     admin.auth().createSessionCookie(idToken, {expiresIn}).then(sessionCookie => {
@@ -24,9 +27,9 @@ routerGithubAuth.post("/github-signin", (req, res, next) => {
 });
 
 routerGithubAuth.get("/github/profile", (req, res, next) => {
-    // console.log(req.cookies);
+    console.log("SESSION GITHUB");
     const sessionCookie = req.cookies.session || '';
-
+    
     // console.log(sessionCookie);
 
     admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
@@ -39,7 +42,7 @@ routerGithubAuth.get("/github/profile", (req, res, next) => {
             if (!user) {
                 const user = new User({
                     id: uid,
-                    name: name,
+                    name: nameUser,
                     photo: picture,
                     bio: "",
                     phone: "",
@@ -47,7 +50,9 @@ routerGithubAuth.get("/github/profile", (req, res, next) => {
                 });
 
                 user.save().catch(err => console.log(err));
-            }
+
+                res.json({"status": true, "user": {"id": uid, name, "photo": picture, "bio": "", "phone": "", email, "provider":  sign_in_provider}});
+            }   
             else{
                 const {name, photo, bio, phone, email} = user;
                 
@@ -61,6 +66,39 @@ routerGithubAuth.get("/github/profile", (req, res, next) => {
         console.log(error);
     })
 
+});
+
+routerGithubAuth.get("/github-logout", (req, res, next) => {
+    const sessionCookie = req.cookies.session || '';
+
+    res.clearCookie("session");
+
+    if (sessionCookie) {
+        admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
+            console.log(decodedClaims, "32");
+            return admin.auth().revokeRefreshTokens(decodedClaims.sub);
+        }).then(() => {
+            res.json({"status": false, "provider": "github.com"})
+        })
+    }
+});
+
+routerGithubAuth.post("/github-edit", (req, res, next) => {
+    
+    const {id, name, bio, phone, email} = req.body;
+
+    User.findOne({id: id}).then(user => {
+        if (user) {
+            user.name = name;
+            user.bio = bio;
+            user.phone = phone;
+            user.email = email;
+
+            user.save().then(() => {
+                res.json({"status": true});
+            }).catch(err => console.log(err));
+        }
+    });
 });
 
 module.exports = routerGithubAuth;
