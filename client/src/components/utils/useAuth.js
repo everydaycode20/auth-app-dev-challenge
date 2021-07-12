@@ -207,9 +207,30 @@ export function useAuth() {
         }
     }
 
+    function useUploadImage() {
+        
+        function uploadImage(file, id) {
+            return new Promise((resolve, reject) => {
+                fetch("/auth/upload-file", {
+                    method: "POST",
+                    credentials: "include",
+                    body: file,
+                }).then(res => res.json()).then(data => {
+                    resolve(data);
+                }).catch(err => reject(err));
+            });
+        }
+        
+        return{
+            uploadImage
+        }
+
+    }
+
     return {
         useGoogleAuth,
-        useAuthGithub
+        useAuthGithub,
+        useUploadImage
     }
 
 }

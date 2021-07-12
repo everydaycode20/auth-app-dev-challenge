@@ -1,5 +1,8 @@
-import React, {useState, useEffect, useContext} from "react";
-import {  Link, Redirect } from "react-router-dom";
+import React, { useState } from "react";
+import {  Link } from "react-router-dom";
+
+import LogoutIcon from "../../images/logout_icon.svg";
+import Profile from "../../images/profile_filled.svg";
 
 export default function ProfileComp({user, logout, bio}) {
     
@@ -22,10 +25,12 @@ export default function ProfileComp({user, logout, bio}) {
                     <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
                 </div>
                 {dropdown && <div className="dropdown">
-                    <div>
-                        <p>My Profile</p>
+                    <div className="profile-link-container">
+                        <img src={Profile} alt="profile" />
+                        <Link to="/profile">My Profile</Link>
                     </div>
-                    <div onClick={() => logout()}>
+                    <div className="logout-container" onClick={() => logout()}>
+                        <img src={LogoutIcon} alt="logout" />
                         <p>Logout</p>
                     </div>
                 </div>}

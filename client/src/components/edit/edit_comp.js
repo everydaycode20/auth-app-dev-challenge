@@ -1,12 +1,24 @@
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
 import { Link } from "react-router-dom";
 
 import Back from "../../images/arrow_back.svg";
 import PhotoCamera from "../../images/photo_camera.svg";
+import LogoutIcon from "../../images/logout_icon.svg";
+import Profile from "../../images/profile_filled.svg";
 
-export default function EditComp({user, name, setName, bio, setBio, phone, setPhone, email, setEmail, provider, showMessage, editProfile}) {
+export default function EditComp({user, name, setName, bio, setBio, phone, setPhone, email, setEmail, provider, showMessage, logout, editProfile, uploadImage}) {
 
     const [dropdown, setDropdown] = useState(false);
+
+    const inputFile = useRef(null);
+
+    const [image, setImage] = useState("");
+
+    const [oneImage, setOneImage] = useState(null);
+
+    const [imageError, setImageError] = useState(false);
+
+    const [messageError, setMessageError] = useState("");
 
     function showDropdown() {
         setDropdown(true);
@@ -15,20 +27,56 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
             setDropdown(false)
         }
     }
+    
+    function openInput() {
+        inputFile.current.click();
+    }
+
+    function handleFile(e) {    
+
+        if (!e.target.files[0].name.match(/.(jpg|jpeg|png)$/i)) {
+            setMessageError("upload a png, jpg or jpeg image");
+            setImageError(true);
+            setTimeout(() => {
+                setImageError(false);
+            }, 3000);
+        }
+        if (e.target.files[0].size > 1_000_000) {
+            setMessageError("upload an image smaller than 1 MB");
+            setImageError(true);
+        }
+        else{
+            setImageError(false);
+            const form = new FormData();
+            form.append("file", e.target.files[0]);
+            uploadFile(form);
+        }
+        
+    }
+
+    function uploadFile(file) {
+        
+        uploadImage.uploadImage(file, user.id).then(data => {
+            setImage(data.image);
+            setOneImage(true);
+        });
+    }
 
     return (
         <>
             <header className="profile-header">
-                <div onClick={() => showDropdown(true)} className="profile-options">
-                    <img src={user.photo} alt="profile" />
+                <div onClick={() => showDropdown(true)} className="profile-options" tabIndex="0">
+                    <img src={oneImage ? image : user.photo} alt="profile" />
                     <span>{user.name}</span>
                     <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
                 </div>
                 {dropdown && <div className="dropdown">
-                    <div>
-                        <p>My Profile</p>
+                    <div className="profile-link-container">
+                        <img src={Profile} alt="profile" />
+                        <Link to="/profile">My Profile</Link>
                     </div>
-                    <div>
+                    <div className="logout-container" onClick={() => logout()}>
+                        <img src={LogoutIcon} alt="logout" />
                         <p>Logout</p>
                     </div>
                 </div>}
@@ -46,14 +94,19 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
                         <p>Changes will be reflected to every services</p>
                     </div>
                     <div className="profile-img">
-                        <div className="img-container">
-                            <img src={user.photo} alt="profile" />
+                        <div className="img-container" tabIndex="0" onClick={() => openInput()}>
+                            <img src={oneImage ? image : user.photo} alt="profile" />
+                            <form >
+                                <input style={{display:'none'}} type="file" name="file" accept="image/png, image/jpeg, image/jpg" ref={inputFile} onChange={e => handleFile(e)}/>                            
+                            </form>
                             <div className="overlay">
                                 <img src={PhotoCamera} alt="camera" />
                             </div>
+                            {imageError && <p  className="imageError">{messageError}</p>}
                         </div>
                         <h3>CHANGE PHOTO</h3>
                     </div>
+                    
                     <form className="form-container" onSubmit={e => editProfile(e)}>
                         <div className="form">
                             <label htmlFor="">Name</label>

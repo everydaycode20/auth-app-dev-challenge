@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from "react";
-import {  Link, Redirect } from "react-router-dom";
+import {  Redirect } from "react-router-dom";
 
 import ProfileComp from "./profile_comp";
 
@@ -11,21 +11,11 @@ function Profile() {
     
     const {googleAuth, githubAuth} = useContext(GoogleAuthContext);
 
-    const [dropdown, setDropdown] = useState(false);
-
     const [isAllowed, setIsAllowed] = useState(null);
 
     const [user, setUser] = useState({});
 
     const [bio, setBio] = useState("");
-
-    function showDropdown() {
-        setDropdown(true);
-
-        if (dropdown) {
-            setDropdown(false)
-        }
-    }
     
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");

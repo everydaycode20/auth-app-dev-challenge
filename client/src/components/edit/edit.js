@@ -1,17 +1,15 @@
 import React, {useState, useContext, useEffect} from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import EditComp from "./edit_comp";
 
 import { GoogleAuthContext } from "../utils/auth_context";
 
 import "../../styles/edit.scss";
-import Back from "../../images/arrow_back.svg";
-import PhotoCamera from "../../images/photo_camera.svg";
 
 function Edit() {
     
-    const {googleAuth, githubAuth} = useContext(GoogleAuthContext);
+    const {googleAuth, githubAuth, uploadImage} = useContext(GoogleAuthContext);
 
     const [isAllowed, setIsAllowed] = useState(null);
 
@@ -108,13 +106,25 @@ function Edit() {
         }
     }
     
+    function logout() {
+        const provider = sessionStorage.getItem("provider");
+        
+        if (provider === "google.com") {
+            googleAuth.logout();
+        }
+        else{
+            githubAuth.logout();
+        }
+        
+    }
+
     if (isAllowed === false && isAllowed !== null) {
         return <Redirect to="/"/>
     }
     
     if (isAllowed === true && isAllowed !== null) {
         return (
-            <EditComp user={user} name={name} setName={setName} bio={bio} setBio={setBio} phone={phone} setPhone={setPhone} email={email} setEmail={setEmail} provider={provider} showMessage={showMessage} editProfile={editProfile}/>
+            <EditComp user={user} name={name} setName={setName} bio={bio} setBio={setBio} phone={phone} setPhone={setPhone} email={email} setEmail={setEmail} provider={provider} showMessage={showMessage} logout={logout} editProfile={editProfile} uploadImage={uploadImage}/>
         )
     }
 
