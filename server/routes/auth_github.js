@@ -9,9 +9,9 @@ const admin = google_admin();
 let nameUser = "";
 
 routerGithubAuth.post("/github-signin", (req, res, next) => {
-    console.log("AUTH GITHUB");
+    
     const idToken = req.body.idToken.toString();
-    console.log("github signin");
+    
     nameUser = req.body.user;
     const expiresIn = 60 * 60 * 1000;
 

@@ -1,6 +1,8 @@
 const routerGoogleAuth = require("express").Router();
 const mongoose = require("mongoose");
 
+const isVerified = require("../middleware/isAuth").isAuthorized;
+
 const User = require("../models/client").User;
 
 const readFileType = require("../utils/readFileType").readFileType;
@@ -31,7 +33,7 @@ routerGoogleAuth.post("/google-signin", (req, res, next) => {
 
     admin.auth().createSessionCookie(idToken, {expiresIn}).then(sessionCookie => {
         const options = { maxAge: expiresIn };
-        // console.log(sessionCookie);
+        
         res.cookie("session", sessionCookie, options);
         
         res.json({"status": true, "provider": "google.com"});
@@ -55,41 +57,33 @@ routerGoogleAuth.get("/google-logout", (req, res, next) => {
     }
 });
 
-routerGoogleAuth.get("/google/profile", (req, res, next) => {
+routerGoogleAuth.get("/google/profile", isVerified(admin), (req, res, next) => {
 
-    const sessionCookie = req.cookies.session || '';
+    const {uid, email, name, picture} = res.locals.userInfo;
+    const {sign_in_provider} = res.locals.userInfo.firebase;
 
-    admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
+    res.cookie("id", uid);
+    User.findOne({id: uid}).then(user => {
+        if (!user) {
+            const user = new User({
+                id: uid,
+                name: name,
+                photo: picture,
+                bio: "",
+                phone: "",
+                email: email,
+            });
 
-        const {uid, email, name, picture} = decodedClaims;
-        const {sign_in_provider} = decodedClaims.firebase;
-        res.cookie("id", uid);
-        User.findOne({id: uid}).then(user => {
-            if (!user) {
-                const user = new User({
-                    id: uid,
-                    name: name,
-                    photo: picture,
-                    bio: "",
-                    phone: "",
-                    email: email,
-                });
+            user.save().catch(err => console.log(err));
 
-                user.save().catch(err => console.log(err));
-
-                res.json({"status": true, "user": {"id": uid, name, "photo": picture, "bio": "", "phone": "", email, "provider":  sign_in_provider}});
-                
-            }
-            else{
-                const {name, photo, bio, phone, email} = user;
-                
-                res.json({"status": true, "user": {"id": uid, name, photo, bio, phone, email, "provider":  sign_in_provider}});
-            }
-        });
-
-    }).catch(error => {
-        res.json({"status": false});
-        console.log(error);
+            res.json({"status": true, "user": {"id": uid, name, "photo": picture, "bio": "", "phone": "", email, "provider":  sign_in_provider}});
+            
+        }
+        else{
+            const {name, photo, bio, phone, email} = user;
+            
+            res.json({"status": true, "user": {"id": uid, name, photo, bio, phone, email, "provider":  sign_in_provider}});
+        }
     });
 
 });
@@ -112,7 +106,7 @@ routerGoogleAuth.post("/google-edit", (req, res, next) => {
     })
 });
 
-routerGoogleAuth.post("/upload-file", (req, res, next) => {
+routerGoogleAuth.post("/upload-file", isVerified(admin), (req, res, next) => {
     const {id} = req.cookies;
     
     upload(req, res, err => {
