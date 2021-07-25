@@ -22,6 +22,7 @@ routerGithubAuth.post("/github/signin", csrfToken, (req, res, next) => {
     admin.auth().createSessionCookie(idToken, {expiresIn}).then(sessionCookie => {
         const options = { maxAge: expiresIn };
         
+        
         res.cookie("session", sessionCookie, options);
 
         res.json({"status": true, "provider": "github.com"});
