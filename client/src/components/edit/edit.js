@@ -28,7 +28,6 @@ function Edit() {
     const [showMessage, setShowMessage] = useState(false);
     
     useEffect(() => {
-        
         const provider = sessionStorage.getItem("provider");
 
         if (provider === "google.com") {

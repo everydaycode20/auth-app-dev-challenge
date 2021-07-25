@@ -39,29 +39,44 @@ function SignUp() {
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
         
-        if (provider === "google.com") {
-            if (googleAuth.status !== null && googleAuth.status === true) {
-                setIsSignedIn(true);
-            }
-            else if(googleAuth.status !== null && googleAuth.status === false){
-                setIsSignedIn(false);
-            }
+        if (googleAuth.status === false) {
+            setIsSignedIn(false);
         }
         else{
-            if (githubAuth.status !== null && githubAuth.status === true) {
-                setIsSignedIn(true);
+            if (provider === "google.com") {
+                if (googleAuth.status !== null && googleAuth.status === true) {
+                    setIsSignedIn(true);
+                }
+                else if(googleAuth.status !== null && googleAuth.status === false){
+                    setIsSignedIn(false);
+                }
             }
-            else if(githubAuth.status !== null && githubAuth.status === false){
-                setIsSignedIn(false);
+            else{
+                if (githubAuth.status !== null && githubAuth.status === true) {
+                    setIsSignedIn(true);
+                }
+                else if(githubAuth.status !== null && githubAuth.status === false){
+                    setIsSignedIn(false);
+                }
             }
         }
+        
     }, [googleAuth.status, githubAuth.status]);
 
     useEffect(() => {
+        
         const provider = sessionStorage.getItem("provider");
-        console.log(provider, "UE");
-        googleAuth.checkAuth();
-        githubAuth.checkAuth();
+        if (provider === "google.com") {
+            googleAuth.checkAuth();
+        }
+        else if (provider === "github.com") {
+            githubAuth.checkAuth();
+        }
+        else{
+            setIsSignedIn(false);
+        }
+        
+        
     }, []);
 
     function googleSignIn() {

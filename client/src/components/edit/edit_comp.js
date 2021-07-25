@@ -100,7 +100,7 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
                                 <input style={{display:'none'}} type="file" name="file" accept="image/png, image/jpeg, image/jpg" ref={inputFile} onChange={e => handleFile(e)}/>                            
                             </form>
                             <div className="overlay">
-                                <img src={PhotoCamera} alt="camera" />
+                                <img src={PhotoCamera} alt="camera" className="camera" />
                             </div>
                             {imageError && <p  className="imageError">{messageError}</p>}
                         </div>

@@ -25,6 +25,33 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 
 export function useAuth() {
 
+    const [csrfToken, setCsrfToken] = useState("");
+    /**
+     * 
+     * @param {*} name token name
+     * 
+     * @returns
+     */
+
+    const getCookie = name => {
+        let cookieValue = "";
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+    
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+    
+                if (cookie.substring(0, name.length + 1) === (`${name}=`)) {
+                    // cookieValue = decodeURIComponent(cookie.substring("csrftoken".length + 1));
+                    cookieValue = cookie.substring(name.length + 1);
+                    break;
+                }
+                
+            }
+        }
+        return cookieValue;
+    }
+
     /**
      * Google Authentication method
      * 
@@ -38,8 +65,10 @@ export function useAuth() {
 
         const [user, setUser] = useState({});
 
-        const provider = new firebase.auth.GoogleAuthProvider();
+        
 
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
         /**
          * 
          * signs the user with google services
@@ -47,39 +76,40 @@ export function useAuth() {
          */
 
         function signIn() {
-            
+
             firebase.auth().signInWithPopup(provider).then(result => {
                 
                 console.log(result);
-                const {accessToken} = result.credential;
                 
                 result.user.getIdToken().then(idToken => {
                     
-                    fetch("/auth/google-signin", {
+                    fetch("/auth/google/signin", {
                         method: "POST",
                         credentials: "include",
-                        body: JSON.stringify({"idToken": idToken, "csrfToken": accessToken}),
+                        body: JSON.stringify({"idToken": idToken}),
                         headers: {
-                            "Content-Type": "application/json"
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
                         },
-                    }).then(res => res.json()).then(status => {
-                        console.log("AUTH");
+                    }).then(res => {return res.json()}).then(status => {
+                        console.log(status);
+                        const csrftoken = getCookie("csrfToken");
+                        setCsrfToken(csrftoken);
                         setStatus(status.status);
-                        sessionStorage.setItem("provider", status.provider)
+                        sessionStorage.setItem("provider", status.provider);
                     });
+
+                    
                 });
             });
         }
-        
-        /**
-         * 
-         * checks whether user session is verified
-         * 
-         */
 
         function checkAuth() {
+            const csrftokenAlt = getCookie("csrfToken");
+            setCsrfToken(csrftokenAlt);
             
-            fetch("/auth/google/profile", {credentials: "include", withCredentials: true}).then(res => res.json()).then(data => {
+            fetch("/auth/google/profile", {credentials: "include", withCredentials: true, headers: {"xsrf-token": csrfToken || csrftokenAlt},}).then(res => res.json()).then(data => {
+                console.log(data);
                 const {user} = data;
                 console.log(data.user);
                 setUser(user);
@@ -89,7 +119,7 @@ export function useAuth() {
         }
         
         function logout() {
-            fetch("/auth/google-logout", {credentials: "include"}).then(res => res.json()).then(status => {
+            fetch("/auth/google/logout", {credentials: "include"}).then(res => res.json()).then(status => {
                 console.log(status);
                 setStatus(status.status);
             });
@@ -97,15 +127,15 @@ export function useAuth() {
 
         function edit(name, bio, phone, email, id) {
             return new Promise((resolve, reject) => {
-                fetch("/auth/google-edit", {
+                fetch("/auth/google/edit", {
                     method: "POST",
                     credentials: "include",
                     body: JSON.stringify({"id": id, "name": name, "bio": bio, "phone": phone, "email": email}),
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "xsrf-token": csrfToken,
                     }
                 }).then(res => res.json()).then(data => {
-                    // console.log(data);
                     resolve(data);
                 })
             });
@@ -208,6 +238,7 @@ export function useAuth() {
     }
 
     function useUploadImage() {
+        const csrftokenAlt = getCookie("csrfToken");
         
         function uploadImage(file, id) {
             return new Promise((resolve, reject) => {
@@ -215,6 +246,7 @@ export function useAuth() {
                     method: "POST",
                     credentials: "include",
                     body: file,
+                    headers: {"xsrf-token": csrfToken || csrftokenAlt},
                 }).then(res => res.json()).then(data => {
                     resolve(data);
                 }).catch(err => reject(err));
