@@ -3,6 +3,7 @@ import {  Link } from "react-router-dom";
 
 import LogoutIcon from "../../images/logout_icon.svg";
 import Profile from "../../images/profile_filled.svg";
+import Skeleton from "./skeleton";
 
 export default function ProfileComp({user, logout, bio}) {
     
@@ -20,8 +21,8 @@ export default function ProfileComp({user, logout, bio}) {
         <>
             <header className="profile-header">
                 <div onClick={() => showDropdown(true)} className="profile-options">
-                    <img src={user.photo || Profile} alt="profile" />
-                    <span>{user.name}</span>
+                    {user.photo ? <img src={user.photo} alt="profile" /> : <Skeleton width={"45px"} height={"45px"}/>}
+                    {user.name ? <span>{user.name}</span> : <Skeleton width={"115px"} height={"17px"}/>}
                     <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
                 </div>
                 {dropdown && <div className="dropdown">
@@ -50,21 +51,21 @@ export default function ProfileComp({user, logout, bio}) {
                     </div>
                     <div className="profile-img">
                         <h3>PHOTO</h3>
-                        <div className="img-container">
-                            <img src={user.photo || Profile} alt="profile" />
-                        </div>
+                        {user.photo ? <div className="img-container">
+                            <img src={user.photo} alt="profile"/>
+                        </div> : <div style={{width: "80%"}}><Skeleton width={"70px"} height={"70px"}/></div>}
                     </div>
                     <div className="profile-name">
                         <h3>NAME</h3>
-                        <p>{user.name}</p>
+                        {user.name ? <p>{user.name}</p> : <Skeleton width={"391px"} height={"24px"}/>}
                     </div>
                     <div className="profile-bio">
                         <h3>BIO</h3>
-                        <p>{bio}</p>
+                        {bio ? <p>{bio}</p> : <Skeleton width={"391px"} height={"24px"}/>}
                     </div>
                     <div className="profile-email">
                         <h3>EMAIL</h3>
-                        <p>{user.email}</p>
+                        {user.email ? <p>{user.email}</p> : <Skeleton width={"391px"} height={"24px"}/>}
                     </div>
                     <div className="profile-pass">
                         <h3>PASSWORD</h3>

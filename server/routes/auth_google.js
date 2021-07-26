@@ -13,9 +13,9 @@ const admin = google_admin();
 routerGoogleAuth.post("/google/signin", csrfToken, (req, res, next) => {
     
     const idToken = req.body.idToken.toString();
-    
+
     const expiresIn = 60 * 60 * 1000;
-    
+
     admin.auth().createSessionCookie(idToken, {expiresIn}).then(sessionCookie => {
         const options = { maxAge: expiresIn };
         
@@ -23,7 +23,7 @@ routerGoogleAuth.post("/google/signin", csrfToken, (req, res, next) => {
         
         res.json({"status": true, "provider": "google.com" });
 
-    });
+    }).catch(err => console.log(err, "error"));
 });
 
 routerGoogleAuth.get("/google/logout", (req, res, next) => {

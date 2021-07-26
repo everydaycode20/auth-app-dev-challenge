@@ -4,9 +4,7 @@ import { Link, Redirect } from "react-router-dom";
 import { GoogleAuthContext } from "../utils/auth_context";
 
 import GoogleSVG from "../../images/Google.svg";
-import FacebookSVG from "../../images/Facebook.svg";
 import Github from "../../images/Github.svg";
-import Twitter from "../../images/Twitter.svg";
 
 import "../../styles/signup.scss"
 
@@ -28,18 +26,39 @@ function SignIn() {
 
     useEffect(() => {
         
-        if (googleAuth.status !== null && googleAuth.status === true) {
-            console.log(googleAuth.status, "STATUS");
-            setIsSignedIn(true);
-        }
-        else if(googleAuth.status !== null && googleAuth.status === false){
+        const provider = sessionStorage.getItem("provider");
+        
+        if (googleAuth.status === false || githubAuth.status === false || emailAuth.status === false) {
             setIsSignedIn(false);
         }
-        else if(emailAuth.status !== null && emailAuth.status === true){
-            setIsSignedIn(true);
+        else{
+            if (provider === "google.com") {
+                if (googleAuth.status !== null && googleAuth.status === true) {
+                    setIsSignedIn(true);
+                }
+                else if(googleAuth.status !== null && googleAuth.status === false){
+                    setIsSignedIn(false);
+                }
+            }
+            else if(provider === "github.com"){
+                if (githubAuth.status !== null && githubAuth.status === true) {
+                    setIsSignedIn(true);
+                }
+                else if(githubAuth.status !== null && githubAuth.status === false){
+                    setIsSignedIn(false);
+                }
+            }
+            else{
+                if (emailAuth.status !== null && emailAuth.status === true) {
+                    setIsSignedIn(true);
+                }
+                else if(emailAuth.status !== null && emailAuth.status === false){
+                    setIsSignedIn(false);
+                }
+            }
         }
         
-    }, [googleAuth.status, emailAuth.status]);
+    }, [googleAuth.status, githubAuth.status, emailAuth.status]);
 
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
@@ -49,13 +68,22 @@ function SignIn() {
         else if (provider === "github.com") {
             githubAuth.checkAuth();
         }
+        else if(provider === "email"){
+            emailAuth.checkAuth();
+        }
         else{
             setIsSignedIn(false);
         }
     }, []);
 
     function googleSignIn() {
+        sessionStorage.setItem("provider", "google.com")
         googleAuth.signIn();
+    }
+
+    function githubSignIn() {
+        sessionStorage.setItem("provider", "github.com")
+        githubAuth.signIn();
     }
 
     if (isSignedIn === true && isSignedIn !== null) {
@@ -89,7 +117,7 @@ function SignIn() {
     
                             <div className="icons">
                                 <img src={GoogleSVG} alt="google icon" onClick={() => googleSignIn()}/>
-                                <img src={Github} alt="github icon" />
+                                <img src={Github} alt="github icon" onClick={() => githubSignIn()} />
                             </div>
     
                             <p>Don't have an account yet? <Link to="/">Register</Link></p>

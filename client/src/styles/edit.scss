@@ -197,6 +197,19 @@
                     color: #EB5757;
                     animation: imageError 0.5s ease-in 2s forwards;
                 }
+
+                .loading-container{
+                    display: flex;
+                    flex-direction: row;
+
+                    p{
+                        color: #2F80ED;
+                    }
+
+                    img{
+                        width: 25px;
+                    }
+                }
             }
 
             p{

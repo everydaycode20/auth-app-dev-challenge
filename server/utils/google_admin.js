@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 
-const file = require("../auth-app-f4181-firebase-adminsdk-ay8k7-00fc0d8950.json");
+const file = require("../auth-app-f4181-firebase-adminsdk-ay8k7-9e957fa79e.json");
 
 /**
  * @returns admin SDK provided by Firebase

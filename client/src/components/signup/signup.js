@@ -10,7 +10,7 @@ import "../../styles/signup.scss";
 
 function SignUp() {
 
-    const {googleAuth, githubAuth} = useContext(GoogleAuthContext);
+    const {googleAuth, githubAuth, emailAuth} = useContext(GoogleAuthContext);
     // const {githubAuth} = useContext(GithubAuthContext);
 
     const [email, setEmail] = useState("");
@@ -37,8 +37,9 @@ function SignUp() {
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
         
-        if (googleAuth.status === false) {
+        if (googleAuth.status === false || githubAuth.status === false || emailAuth.status === false) {
             setIsSignedIn(false);
+            sessionStorage.removeItem("provider");
         }
         else{
             if (provider === "google.com") {
@@ -49,7 +50,7 @@ function SignUp() {
                     setIsSignedIn(false);
                 }
             }
-            else{
+            else if(provider === "github.com"){
                 if (githubAuth.status !== null && githubAuth.status === true) {
                     setIsSignedIn(true);
                 }
@@ -57,9 +58,17 @@ function SignUp() {
                     setIsSignedIn(false);
                 }
             }
+            else{
+                if (emailAuth.status !== null && emailAuth.status === true) {
+                    setIsSignedIn(true);
+                }
+                else if(emailAuth.status !== null && emailAuth.status === false){
+                    setIsSignedIn(false);
+                }
+            }
         }
         
-    }, [googleAuth.status, githubAuth.status]);
+    }, [googleAuth.status, githubAuth.status, emailAuth.status]);
 
     useEffect(() => {
         
@@ -70,11 +79,13 @@ function SignUp() {
         else if (provider === "github.com") {
             githubAuth.checkAuth();
         }
+        else if(provider === "email"){
+            emailAuth.checkAuth();
+        }
         else{
             setIsSignedIn(false);
         }
-        
-        
+
     }, []);
 
     function googleSignIn() {

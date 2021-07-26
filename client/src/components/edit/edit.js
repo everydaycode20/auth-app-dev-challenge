@@ -139,12 +139,15 @@ function Edit() {
         
         if (provider === "google.com") {
             googleAuth.logout();
+            sessionStorage.removeItem("provider");
         }
         else if(provider === "github.com"){
             githubAuth.logout();
+            sessionStorage.removeItem("provider");
         }
         else{
             emailAuth.logout();
+            sessionStorage.removeItem("provider");
         }
     }
 

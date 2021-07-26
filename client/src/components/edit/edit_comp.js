@@ -6,6 +6,8 @@ import PhotoCamera from "../../images/photo_camera.svg";
 import LogoutIcon from "../../images/logout_icon.svg";
 import Profile from "../../images/profile_filled.svg";
 
+import LoadingGif from "../../images/loading.gif";
+
 export default function EditComp({user, name, setName, bio, setBio, phone, setPhone, email, setEmail, provider, showMessage, logout, editProfile, uploadImage, emailAuth}) {
 
     const [dropdown, setDropdown] = useState(false);
@@ -19,6 +21,8 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
     const [imageError, setImageError] = useState(false);
 
     const [messageError, setMessageError] = useState("");
+
+    const [isUploaded, setIsUploaded] = useState(false);
 
     function showDropdown() {
         setDropdown(true);
@@ -56,18 +60,19 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
 
     function uploadFile(file) {
         const provider = sessionStorage.getItem("provider");
-
+        setIsUploaded(true);
         if (provider === "google.com" || provider === "github.com") {
-            uploadImage.uploadImage(file, user.id).then(data => {
+            uploadImage.uploadImage(file).then(data => {
                 setImage(data.image);
                 setOneImage(true);
+                setIsUploaded(false);
             });
         }
         else{
             emailAuth.useUploadImage(file).then(data => {
-                console.log(data);
                 setImage(data.image);
                 setOneImage(true);
+                setIsUploaded(false);
             });
         }
     }
@@ -105,6 +110,7 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
                     </div>
                     <div className="profile-img">
                         <div className="img-container" tabIndex="0" onClick={() => openInput()}>
+                            
                             <img src={oneImage ? image : user.photo || Profile} alt="profile" />
                             <form >
                                 <input style={{display:'none'}} type="file" name="file" accept="image/png, image/jpeg, image/jpg" ref={inputFile} onChange={e => handleFile(e)}/>                            
@@ -113,6 +119,12 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
                                 <img src={PhotoCamera} alt="camera" className="camera" />
                             </div>
                             {imageError && <p  className="imageError">{messageError}</p>}
+                            {isUploaded && 
+                                <div className="loading-container">
+                                    <p>uploading</p>
+                                    <img src={LoadingGif} alt="loading"/>
+                                </div>
+                            }
                         </div>
                         <h3>CHANGE PHOTO</h3>
                     </div>

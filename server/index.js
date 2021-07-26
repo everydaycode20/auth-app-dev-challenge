@@ -36,7 +36,7 @@ require("./utils/passport_config/passport-strategy");
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/auth", routerGoogleAuth, routerGithubAuth,  routerEmail);
+app.use("/auth", routerGoogleAuth, routerGithubAuth, routerUploadFile, routerEmail);
 
 
 const port = process.env.PORT || 8080;

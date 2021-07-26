@@ -85,8 +85,8 @@ router.post("/edit", (req, res, next) => {
 
 router.get("/logout", (req, res, next) => {
 
-    req.logOut();
     res.clearCookie("session");
+    
     res.clearCookie("csrfToken");
     res.json({"status": false, "message": "user logged out"});
     

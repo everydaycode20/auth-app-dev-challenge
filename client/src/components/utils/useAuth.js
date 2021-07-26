@@ -78,7 +78,7 @@ export function useAuth() {
         function signIn() {
 
             firebase.auth().signInWithPopup(provider).then(result => {
-                
+                console.log(result);
                 result.user.getIdToken().then(idToken => {
                     
                     fetch("/auth/google/signin", {
@@ -332,7 +332,7 @@ export function useAuth() {
     function useUploadImage() {
         const csrftokenAlt = getCookie("csrfToken");
         
-        function uploadImage(file, id) {
+        function uploadImage(file) {
             return new Promise((resolve, reject) => {
                 fetch("/auth/upload-file", {
                     method: "POST",
