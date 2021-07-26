@@ -12,15 +12,18 @@ import "../../styles/signup.scss"
 
 function SignIn() {
     
-    const {googleAuth} = useContext(GoogleAuthContext);
+    const {googleAuth, githubAuth, emailAuth} = useContext(GoogleAuthContext);
 
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     const [isSignedIn, setIsSignedIn] = useState(null);
 
-    function registerEmail(e) {
-        console.log(e);
+    function login(e) {
+        e.preventDefault();
+
+        emailAuth.signIn(username, password);
+
     }
 
     useEffect(() => {
@@ -32,11 +35,23 @@ function SignIn() {
         else if(googleAuth.status !== null && googleAuth.status === false){
             setIsSignedIn(false);
         }
+        else if(emailAuth.status !== null && emailAuth.status === true){
+            setIsSignedIn(true);
+        }
         
-    }, [googleAuth.status]);
+    }, [googleAuth.status, emailAuth.status]);
 
     useEffect(() => {
-        googleAuth.checkAuth();
+        const provider = sessionStorage.getItem("provider");
+        if (provider === "google.com") {
+            googleAuth.checkAuth();
+        }
+        else if (provider === "github.com") {
+            githubAuth.checkAuth();
+        }
+        else{
+            setIsSignedIn(false);
+        }
     }, []);
 
     function googleSignIn() {
@@ -56,15 +71,15 @@ function SignIn() {
                             <p>Join thousands of learners from around the world</p>
                             <p>Master web development by making real-life projects. There are multiple paths for you to choose</p>
                         </div>
-                        <form className="form" action="">
+                        <form className="form" onSubmit={e => login(e)}>
                             <div className="email-form">
                                 <label htmlFor="email">Email</label>
-                                <input id="email" type="text" name="email" placeholder="example@example.com"  onInput={e => registerEmail(e.target.value)}/>
+                                <input id="email" type="text" name="email" placeholder="example@example.com"  onInput={e => setUsername(e.target.value)}/>
                             </div>
                             
                             <div className="email-form">
                                 <label htmlFor="password">Password</label>
-                                <input id="password" type="password"/>
+                                <input id="password" type="password" onInput={e => setPassword(e.target.value)}/>
                             </div>
                             <button type="submit" className="btn">Login</button>
                         </form>

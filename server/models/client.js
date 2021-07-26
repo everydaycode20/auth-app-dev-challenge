@@ -16,11 +16,11 @@ const userSchema = new mongoose.Schema({
     bio: String,
     phone: String,
     email: String,
-    password: String
+    password: String,
+    authType: String
 });
 
 const User = mongoose.model("User", userSchema);
-
 
 exports.User = User;
 exports.Connection = connection;

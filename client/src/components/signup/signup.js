@@ -4,9 +4,7 @@ import { Link, Redirect } from "react-router-dom";
 import { GoogleAuthContext } from "../utils/auth_context";
 
 import GoogleSVG from "../../images/Google.svg";
-import FacebookSVG from "../../images/Facebook.svg";
 import Github from "../../images/Github.svg";
-import Twitter from "../../images/Twitter.svg";
 
 import "../../styles/signup.scss";
 
@@ -23,7 +21,7 @@ function SignUp() {
     function signUp(e) {
         e.preventDefault();
 
-        fetch("/signup", {
+        fetch("/auth/signup", {
             method: "POST",
             credentials: "include",
             body: JSON.stringify({email, password}),

@@ -72,7 +72,6 @@ routerGoogleAuth.get("/google/profile", isVerified(admin), (req, res, next) => {
             res.json({"status": true, "user": {"id": uid, name, photo, bio, phone, email, "provider":  sign_in_provider}});
         }
     });
-
 });
 
 routerGoogleAuth.post("/google/edit", isVerified(admin), (req, res, next) => {
@@ -90,7 +89,7 @@ routerGoogleAuth.post("/google/edit", isVerified(admin), (req, res, next) => {
                 res.json({"status": true});
             }).catch(err => console.log(err));
         }
-    })
+    });
 });
 
 module.exports = routerGoogleAuth;

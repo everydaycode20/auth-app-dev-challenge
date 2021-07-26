@@ -79,8 +79,6 @@ export function useAuth() {
 
             firebase.auth().signInWithPopup(provider).then(result => {
                 
-                console.log(result);
-                
                 result.user.getIdToken().then(idToken => {
                     
                     fetch("/auth/google/signin", {
@@ -92,7 +90,7 @@ export function useAuth() {
                             "Content-Type": "application/json",
                         },
                     }).then(res => {return res.json()}).then(status => {
-                        console.log(status);
+                        
                         const csrftoken = getCookie("csrfToken");
                         setCsrfToken(csrftoken);
                         setStatus(status.status);
@@ -186,7 +184,7 @@ export function useAuth() {
                             "Content-Type": "application/json"
                         },
                     }).then(res => res.json()).then(status => {
-                        
+                        console.log(status);
                         setStatus(status.status);
                         sessionStorage.setItem("provider", status.provider)
                     });
@@ -237,6 +235,100 @@ export function useAuth() {
         }
     }
 
+    function useEmailAuth() {
+        
+        const [status, setStatus] = useState(null);
+
+        const [user, setUser] = useState({});
+
+        /**
+         * 
+         * @param {*} username 
+         * @param {*} password 
+         * 
+         */
+
+        function signIn(username, password) {
+                
+            fetch("/auth/signin", {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({username, password}),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }).then(res => res.json()).then(status => {
+                
+                setStatus(status.status);
+                sessionStorage.setItem("provider", "email")
+            });
+
+        }
+
+        function checkAuth() {
+            const csrftokenAlt = getCookie("csrfToken");
+            setCsrfToken(csrftokenAlt);
+            
+            fetch("/auth/profile", {credentials: "include", withCredentials: true, headers: {"xsrf-token": csrfToken || csrftokenAlt},}).then(res => res.json()).then(data => {
+                console.log(data);
+                const {user} = data;
+                console.log(data.user);
+                setUser(user);
+                setStatus(data.status);
+                
+            });
+        }
+
+        function edit(name, bio, phone, email, id) {
+            return new Promise((resolve, reject) => {
+                fetch("/auth/edit", {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify({"id": id, "name": name, "bio": bio, "phone": phone, "email": email}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(res => res.json()).then(data => {
+                    
+                    resolve(data);
+                }).catch(err => reject(err));
+            });
+        }
+
+        function useUploadImage(file) {
+            const csrftokenAlt = getCookie("csrfToken");
+            
+            return new Promise((resolve, reject) => {
+                fetch("/auth/mail/upload-file", {
+                    method: "POST",
+                    credentials: "include",
+                    body: file,
+                    headers: {"xsrf-token": csrfToken || csrftokenAlt},
+                }).then(res => res.json()).then(data => {
+                    resolve(data);
+                }).catch(err => reject(err));
+            });
+    
+        }
+
+        function logout() {
+            fetch("/auth/logout", {credentials: "include"}).then(res => res.json()).then(status => {
+                
+                setStatus(status.status);
+            });
+        }
+
+        return {
+            status,
+            user,
+            signIn,
+            checkAuth,
+            edit,
+            useUploadImage,
+            logout
+        }
+    }
+
     function useUploadImage() {
         const csrftokenAlt = getCookie("csrfToken");
         
@@ -262,7 +354,8 @@ export function useAuth() {
     return {
         useGoogleAuth,
         useAuthGithub,
-        useUploadImage
+        useUploadImage,
+        useEmailAuth
     }
 
 }

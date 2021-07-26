@@ -20,7 +20,7 @@ export default function ProfileComp({user, logout, bio}) {
         <>
             <header className="profile-header">
                 <div onClick={() => showDropdown(true)} className="profile-options">
-                    <img src={user.photo} alt="profile" />
+                    <img src={user.photo || Profile} alt="profile" />
                     <span>{user.name}</span>
                     <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
                 </div>
@@ -51,7 +51,7 @@ export default function ProfileComp({user, logout, bio}) {
                     <div className="profile-img">
                         <h3>PHOTO</h3>
                         <div className="img-container">
-                            <img src={user.photo} alt="profile" />
+                            <img src={user.photo || Profile} alt="profile" />
                         </div>
                     </div>
                     <div className="profile-name">

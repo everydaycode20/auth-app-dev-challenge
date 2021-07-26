@@ -6,7 +6,7 @@ import PhotoCamera from "../../images/photo_camera.svg";
 import LogoutIcon from "../../images/logout_icon.svg";
 import Profile from "../../images/profile_filled.svg";
 
-export default function EditComp({user, name, setName, bio, setBio, phone, setPhone, email, setEmail, provider, showMessage, logout, editProfile, uploadImage}) {
+export default function EditComp({user, name, setName, bio, setBio, phone, setPhone, email, setEmail, provider, showMessage, logout, editProfile, uploadImage, emailAuth}) {
 
     const [dropdown, setDropdown] = useState(false);
 
@@ -55,18 +55,28 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
     }
 
     function uploadFile(file) {
-        
-        uploadImage.uploadImage(file, user.id).then(data => {
-            setImage(data.image);
-            setOneImage(true);
-        });
+        const provider = sessionStorage.getItem("provider");
+
+        if (provider === "google.com" || provider === "github.com") {
+            uploadImage.uploadImage(file, user.id).then(data => {
+                setImage(data.image);
+                setOneImage(true);
+            });
+        }
+        else{
+            emailAuth.useUploadImage(file).then(data => {
+                console.log(data);
+                setImage(data.image);
+                setOneImage(true);
+            });
+        }
     }
 
     return (
         <>
             <header className="profile-header">
                 <div onClick={() => showDropdown(true)} className="profile-options" tabIndex="0">
-                    <img src={oneImage ? image : user.photo} alt="profile" />
+                    <img src={oneImage ? image : user.photo || Profile} alt="profile" />
                     <span>{user.name}</span>
                     <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
                 </div>
@@ -95,7 +105,7 @@ export default function EditComp({user, name, setName, bio, setBio, phone, setPh
                     </div>
                     <div className="profile-img">
                         <div className="img-container" tabIndex="0" onClick={() => openInput()}>
-                            <img src={oneImage ? image : user.photo} alt="profile" />
+                            <img src={oneImage ? image : user.photo || Profile} alt="profile" />
                             <form >
                                 <input style={{display:'none'}} type="file" name="file" accept="image/png, image/jpeg, image/jpg" ref={inputFile} onChange={e => handleFile(e)}/>                            
                             </form>

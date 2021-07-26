@@ -14,10 +14,11 @@ function App() {
   const googleAuth = useAuth().useGoogleAuth();
   const githubAuth = useAuth().useAuthGithub();
   const uploadImage = useAuth().useUploadImage();
+  const emailAuth = useAuth().useEmailAuth();
   
   return (
     <>
-    <GoogleAuthContext.Provider value={{googleAuth, githubAuth, uploadImage}}>
+    <GoogleAuthContext.Provider value={{googleAuth, githubAuth, uploadImage, emailAuth}}>
       <Router>
         <Switch>
           <Route exact path="/">

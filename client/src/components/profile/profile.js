@@ -9,7 +9,7 @@ import "../../styles/profile.scss";
 
 function Profile() {
     
-    const {googleAuth, githubAuth} = useContext(GoogleAuthContext);
+    const {googleAuth, githubAuth, emailAuth} = useContext(GoogleAuthContext);
 
     const [isAllowed, setIsAllowed] = useState(null);
 
@@ -23,9 +23,13 @@ function Profile() {
         if (provider === "google.com") {
             googleAuth.checkAuth();
         }
-        else{
+        else if(provider === "github.com"){
             githubAuth.checkAuth();
         }
+        else{
+            emailAuth.checkAuth();
+        }
+
     }, []);
 
     useEffect(() => {
@@ -47,7 +51,7 @@ function Profile() {
                 setIsAllowed(false);
             }
         }
-        else{
+        else if(provider === "github.com"){
             if (githubAuth.status !== null && githubAuth.status === true ) {
                 
                 setIsAllowed(true);
@@ -60,15 +64,30 @@ function Profile() {
                     
                     setUser(githubAuth.user);
                 }
-            
-                console.log(githubAuth.user, "USER");
             }
             else if(githubAuth.status !== null && githubAuth.status === false){
-                console.log("false");
                 setIsAllowed(false);
             }
         }
-    }, [googleAuth.status, googleAuth.user, githubAuth.status, githubAuth.user]);
+        else{
+            if (emailAuth.status !== null && emailAuth.status === true ) {
+                setIsAllowed(true);
+
+                if (emailAuth.user !== undefined && Object.keys(emailAuth.user).length !== 0) {
+                    
+                    let userBio = emailAuth.user.bio;
+
+                    setBio(`${userBio.substring(0,50)}...`);
+                    
+                    setUser(emailAuth.user);
+                }
+            }
+            else if(emailAuth.status !== null && emailAuth.status === false){
+                setIsAllowed(false);
+            }
+        }
+
+    }, [googleAuth.status, googleAuth.user, githubAuth.status, githubAuth.user, emailAuth.status, emailAuth.user]);
 
     function logout() {
         const provider = sessionStorage.getItem("provider");
@@ -76,8 +95,11 @@ function Profile() {
         if (provider === "google.com") {
             googleAuth.logout();
         }
-        else{
+        else if(provider === "github.com"){
             githubAuth.logout();
+        }
+        else{
+            emailAuth.logout();
         }
         
     }

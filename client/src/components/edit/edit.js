@@ -9,7 +9,7 @@ import "../../styles/edit.scss";
 
 function Edit() {
     
-    const {googleAuth, githubAuth, uploadImage} = useContext(GoogleAuthContext);
+    const {googleAuth, githubAuth, uploadImage, emailAuth} = useContext(GoogleAuthContext);
 
     const [isAllowed, setIsAllowed] = useState(null);
 
@@ -46,7 +46,7 @@ function Edit() {
                 setIsAllowed(false);
             }
         }
-        else{
+        else if(provider === "github.com"){
             if (githubAuth.status !== null && githubAuth.status === true) {
                 setIsAllowed(true);
                 setUser(githubAuth.user);
@@ -60,8 +60,22 @@ function Edit() {
                 setIsAllowed(false);
             }
         }
+        else{
+            if (emailAuth.status !== null & emailAuth.status === true) {
+                setIsAllowed(true);
+                setUser(emailAuth.user);
+                setName(emailAuth.user.name);
+                setBio(emailAuth.user.bio);
+                setEmail(emailAuth.user.email);
+                setPhone(emailAuth.user.phone);
+                setProvider(emailAuth.user.provider);
+            }
+            else if (emailAuth.status !== null && emailAuth.status === false) {
+                setIsAllowed(false);
+            }
+        }
 
-    }, [googleAuth.status, googleAuth.user, githubAuth.status, githubAuth.user]);
+    }, [googleAuth.status, googleAuth.user, githubAuth.status, githubAuth.user, emailAuth.status, emailAuth.user]);
 
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
@@ -69,8 +83,11 @@ function Edit() {
         if (provider === "google.com") {
             googleAuth.checkAuth();
         }
-        else{
+        else if(provider === "github.com"){
             githubAuth.checkAuth();
+        }
+        else{
+            emailAuth.checkAuth();
         }
     }, []);
 
@@ -91,8 +108,20 @@ function Edit() {
                 }
             });
         }
-        else{
+        else if(provider === "github.com"){
             githubAuth.edit(name, bio, phone, email, githubAuth.user.id).then(data => {
+                console.log(data);
+                if (data.status === true) {
+                    setShowMessage(true);
+
+                    setTimeout(() => {
+                        setShowMessage(false);
+                    }, 3000);
+                }
+            });
+        }
+        else{
+            emailAuth.edit(name, bio, phone, email, githubAuth.user.id).then(data => {
                 console.log(data);
                 if (data.status === true) {
                     setShowMessage(true);
@@ -111,10 +140,12 @@ function Edit() {
         if (provider === "google.com") {
             googleAuth.logout();
         }
-        else{
+        else if(provider === "github.com"){
             githubAuth.logout();
         }
-        
+        else{
+            emailAuth.logout();
+        }
     }
 
     if (isAllowed === false && isAllowed !== null) {
@@ -123,7 +154,7 @@ function Edit() {
     
     if (isAllowed === true && isAllowed !== null) {
         return (
-            <EditComp user={user} name={name} setName={setName} bio={bio} setBio={setBio} phone={phone} setPhone={setPhone} email={email} setEmail={setEmail} provider={provider} showMessage={showMessage} logout={logout} editProfile={editProfile} uploadImage={uploadImage}/>
+            <EditComp user={user} name={name} setName={setName} bio={bio} setBio={setBio} phone={phone} setPhone={setPhone} email={email} setEmail={setEmail} provider={provider} showMessage={showMessage} logout={logout} editProfile={editProfile} uploadImage={uploadImage} emailAuth={emailAuth}/>
         )
     }
 
