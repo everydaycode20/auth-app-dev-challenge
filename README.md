@@ -1,4 +1,4 @@
-# Authentication App-Dev Challenge React Express Mongo Firebase Passport
+# Authentication App Dev Challenge React Express Mongo Firebase Passport
 
 
 
