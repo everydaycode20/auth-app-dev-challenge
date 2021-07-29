@@ -13,13 +13,10 @@ This is [the third challenge](https://devchallenges.io/challenges/N1fvBjQfhlkctm
 # Clone this repository
 $ git clone https://github.com/everydaycode20/auth-app-dev-challenge
 
-## You should have mongodb installed on your computer
+# You should have mongodb installed on your computer
 
 # Install dependencies for both folders
 $ npm install
-
-# For client folder make a build
-$ npm run build
 
 # Run the app the server 
 $ npm start
