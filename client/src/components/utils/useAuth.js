@@ -78,7 +78,6 @@ export function useAuth() {
         function signIn() {
 
             firebase.auth().signInWithPopup(provider).then(result => {
-                console.log(result);
                 result.user.getIdToken().then(idToken => {
                     
                     fetch("/auth/google/signin", {
@@ -107,9 +106,7 @@ export function useAuth() {
             setCsrfToken(csrftokenAlt);
             
             fetch("/auth/google/profile", {credentials: "include", withCredentials: true, headers: {"xsrf-token": csrfToken || csrftokenAlt},}).then(res => res.json()).then(data => {
-                console.log(data);
                 const {user} = data;
-                console.log(data.user);
                 setUser(user);
                 setStatus(data.status);
                 
@@ -118,7 +115,6 @@ export function useAuth() {
         
         function logout() {
             fetch("/auth/google/logout", {credentials: "include"}).then(res => res.json()).then(status => {
-                console.log(status);
                 setStatus(status.status);
             });
         }
@@ -169,7 +165,6 @@ export function useAuth() {
         function signIn() {
             
             firebase.auth().signInWithPopup(provider).then(result => {
-                console.log(result);
                 const {accessToken} = result.credential;
                 const {username} = result.additionalUserInfo;
 
@@ -184,7 +179,6 @@ export function useAuth() {
                             "Content-Type": "application/json"
                         },
                     }).then(res => res.json()).then(status => {
-                        console.log(status);
                         setStatus(status.status);
                         sessionStorage.setItem("provider", status.provider)
                     });
@@ -249,7 +243,7 @@ export function useAuth() {
          */
 
         function signIn(username, password) {
-                
+            
             fetch("/auth/signin", {
                 method: "POST",
                 credentials: "include",
@@ -258,11 +252,29 @@ export function useAuth() {
                     "Content-Type": "application/json"
                 },
             }).then(res => res.json()).then(status => {
-                
                 setStatus(status.status);
                 sessionStorage.setItem("provider", "email")
+            }).catch(err => {
+                fetch("/auth/failed").then(data => {return data.json()}).then(status => {
+                    setStatus(status.status);
+                });
             });
 
+        }
+
+        function signUp(email, password) {
+            return new Promise((resolve, reject) => {
+                fetch("/auth/signup", {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify({email, password}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                }).then(res => res.json()).then(status => {
+                    resolve(status);
+                }).catch(err => reject(err));
+            });
         }
 
         function checkAuth() {
@@ -270,12 +282,9 @@ export function useAuth() {
             setCsrfToken(csrftokenAlt);
             
             fetch("/auth/profile", {credentials: "include", withCredentials: true, headers: {"xsrf-token": csrfToken || csrftokenAlt},}).then(res => res.json()).then(data => {
-                console.log(data);
                 const {user} = data;
-                console.log(data.user);
                 setUser(user);
                 setStatus(data.status);
-                
             });
         }
 
@@ -325,7 +334,8 @@ export function useAuth() {
             checkAuth,
             edit,
             useUploadImage,
-            logout
+            logout,
+            signUp
         }
     }
 

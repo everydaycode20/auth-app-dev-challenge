@@ -25,11 +25,11 @@ cloudinary.config({
     api_secret: process.env.API_SECRET
 });
 
-router.post("/signin", csrfToken, passport.authenticate("local", {failureRedirect: "/failed"}), (req, res, next) => {
+router.post("/signin", csrfToken, passport.authenticate("local", {failureRedirect: "/failed",}), (req, res, next) => {
     res.json({"status": true, "message": "user logged in"});
 });
 
-router.post("/failed", (req, res, next) => {
+router.get("/failed", (req, res, next) => {
     res.json({"status": false, "message": "failed login"});
 });
 
@@ -54,7 +54,7 @@ router.post("/signup", async (req, res, next) => {
             res.json({"status": true, "message": "user registered"});
         }
         else{
-            res.json({"status": false, "message": "there is an account associated with this email"});
+            res.json({"status": false, "message": "Email is invalid or already taken"});
         }
     });
 });
@@ -62,7 +62,7 @@ router.post("/signup", async (req, res, next) => {
 router.get("/profile", (req, res, next) => {
     
     const {_id, name, photo, bio, phone, email, authType} = req.user;
-    
+    console.log(req.user);
     res.json({"status": true, "user": {"id": _id, name, photo, bio, phone, email, "provider": authType}});
 });
 

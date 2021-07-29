@@ -8,7 +8,7 @@ import Skeleton from "./skeleton";
 export default function ProfileComp({user, logout, bio}) {
     
     const [dropdown, setDropdown] = useState(false);
-
+    console.log(user.photo === "");
     function showDropdown() {
         setDropdown(true);
 
@@ -21,8 +21,8 @@ export default function ProfileComp({user, logout, bio}) {
         <>
             <header className="profile-header">
                 <div onClick={() => showDropdown(true)} className="profile-options">
-                    {user.photo ? <img src={user.photo} alt="profile" /> : <Skeleton width={"45px"} height={"45px"}/>}
-                    {user.name ? <span>{user.name}</span> : <Skeleton width={"115px"} height={"17px"}/>}
+                    {user.photo || user.photo === "" ? <img src={user.photo || Profile} alt="profile" /> : <Skeleton width={"45px"} height={"45px"}/>}
+                    {user.name || user.name === "" ? <span>{user.name || ""}</span> : <Skeleton width={"115px"} height={"17px"}/>}
                     <div className="triangle" style={{transform: dropdown && "rotateZ(-180deg)"}}></div>
                 </div>
                 {dropdown && <div className="dropdown">
@@ -51,13 +51,13 @@ export default function ProfileComp({user, logout, bio}) {
                     </div>
                     <div className="profile-img">
                         <h3>PHOTO</h3>
-                        {user.photo ? <div className="img-container">
-                            <img src={user.photo} alt="profile"/>
+                        {user.photo || user.photo === "" ? <div className="img-container">
+                            <img src={user.photo || Profile} alt="profile"/>
                         </div> : <div style={{width: "80%"}}><Skeleton width={"70px"} height={"70px"}/></div>}
                     </div>
                     <div className="profile-name">
                         <h3>NAME</h3>
-                        {user.name ? <p>{user.name}</p> : <Skeleton width={"391px"} height={"24px"}/>}
+                        {user.name || user.name === "" ? <p>{user.name || ""}</p> : <Skeleton width={"391px"} height={"24px"}/>}
                     </div>
                     <div className="profile-bio">
                         <h3>BIO</h3>

@@ -17,6 +17,8 @@ function SignIn() {
 
     const [isSignedIn, setIsSignedIn] = useState(null);
 
+    const [showErrorMessage, setShowErrorMessage] = useState(false);
+
     function login(e) {
         e.preventDefault();
 
@@ -30,6 +32,7 @@ function SignIn() {
         
         if (googleAuth.status === false || githubAuth.status === false || emailAuth.status === false) {
             setIsSignedIn(false);
+            setShowErrorMessage(true);
         }
         else{
             if (provider === "google.com") {
@@ -61,6 +64,7 @@ function SignIn() {
     }, [googleAuth.status, githubAuth.status, emailAuth.status]);
 
     useEffect(() => {
+        setShowErrorMessage(false);
         const provider = sessionStorage.getItem("provider");
         if (provider === "google.com") {
             googleAuth.checkAuth();
@@ -100,6 +104,7 @@ function SignIn() {
                             <p>Master web development by making real-life projects. There are multiple paths for you to choose</p>
                         </div>
                         <form className="form" onSubmit={e => login(e)}>
+                            {showErrorMessage && <span className="main-msg-error">Incorrect username or password</span>}
                             <div className="email-form">
                                 <label htmlFor="email">Email</label>
                                 <input id="email" type="text" name="email" placeholder="example@example.com"  onInput={e => setUsername(e.target.value)}/>

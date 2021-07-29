@@ -11,27 +11,65 @@ import "../../styles/signup.scss";
 function SignUp() {
 
     const {googleAuth, githubAuth, emailAuth} = useContext(GoogleAuthContext);
-    // const {githubAuth} = useContext(GithubAuthContext);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const [isSignedIn, setIsSignedIn] = useState(null);
     
+    const [isRegistered, setIsRegistered] = useState(null);
+
+    const [isValidEmail, setIsValidEmail] = useState(true);
+
+    const [isValidPassword, setIsValidPassword] = useState(true);
+
+    const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+    const [message, setMessage] = useState("");
+
     function signUp(e) {
         e.preventDefault();
 
-        fetch("/auth/signup", {
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify({email, password}),
-            headers: {
-                "Content-Type": "application/json"
-            },
-        }).then(res => res.json()).then(status => {
-            
-            console.log(status);
-        });
+        if (isValidPassword && isValidEmail) {
+            emailAuth.signUp(email, password).then(status => {
+                console.log(status);
+                if (status.status === true) {
+                    setIsRegistered(true);
+                }
+                else{
+                    setMessage(status.message);
+                    setShowErrorMessage(true);
+                }
+            });
+        }
+        else{
+            setMessage("your email or password are not correct");
+            setShowErrorMessage(true);
+        }
+    }
+
+    function checkEmail(e) {
+        
+        const regex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{1,}$/;
+
+        if (regex.test(e)) {
+            setIsValidEmail(true);
+            setEmail(e);
+        }
+        else{
+            setIsValidEmail(false);
+        }
+    }
+
+    function checkPassword(e) {
+        
+        if (e.length >= 6) {
+            setIsValidPassword(true);
+            setPassword(e);
+        }
+        else{
+            setIsValidPassword(false);
+        }
     }
 
     useEffect(() => {
@@ -98,6 +136,10 @@ function SignUp() {
         githubAuth.signIn();
     }
 
+    if (isRegistered) {
+        return <Redirect to="/signin"/>
+    }
+
     if (isSignedIn === true && isSignedIn !== null) {
         return <Redirect to="/profile"/>
     }
@@ -112,13 +154,16 @@ function SignUp() {
                             <p>Master web development by making real-life projects. There are multiple paths for you to choose</p>
                         </div>
                         <form className="form" onSubmit={e => signUp(e)}>
+                        {showErrorMessage && <span className="main-msg-error">{message}</span>}
                             <div className="email-form">
                                 <label htmlFor="email">Email</label>
-                                <input id="email" type="text" placeholder="example@example.com" onInput={e => setEmail(e.target.value)}/>
+                                <input id="email" type="text" placeholder="example@example.com" onInput={e => checkEmail(e.target.value)}/>
+                                {!isValidEmail && <span className="msg-error">enter a valid email</span>}
                             </div>
                             <div className="email-form">
                                 <label htmlFor="password">Password</label>
-                                <input id="password" type="password" onInput={e => setPassword(e.target.value)}/>
+                                <input id="password" type="password" onInput={e => checkPassword(e.target.value)}/>
+                                {!isValidPassword && <span className="msg-error">your password must be greater or equal to 6 characters</span>}
                             </div>
                             <button type="submit" className="btn">Start coding now</button>
                         </form>
@@ -133,7 +178,6 @@ function SignUp() {
     
                             <p>Already a member? <Link to="/signin">Login</Link></p>
                         </section>
-    
                     </section>
                 </main>
     

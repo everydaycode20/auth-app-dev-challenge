@@ -37,9 +37,9 @@ function Profile() {
 
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
-        console.log(googleAuth.status, githubAuth.status, emailAuth.status);
+        
         if (provider === "google.com") {
-            console.log("test");
+            
             if (googleAuth.status !== null && googleAuth.status === true ) {
                 
                 setIsAllowed(true);
@@ -53,7 +53,6 @@ function Profile() {
             }
             else if(googleAuth.status !== null && googleAuth.status === false){
                 setIsAllowed(false);
-                console.log("google false");
             }
         }
         else if(provider === "github.com"){
@@ -85,6 +84,7 @@ function Profile() {
                     setBio(`${userBio.substring(0,50)}...`);
                     
                     setUser(emailAuth.user);
+                    
                 }
             }
             else if(emailAuth.status !== null && emailAuth.status === false){
@@ -99,15 +99,12 @@ function Profile() {
         
         if (provider === "google.com") {
             googleAuth.logout();
-            // sessionStorage.removeItem("provider");
         }
         else if(provider === "github.com"){
             githubAuth.logout();
-            // sessionStorage.removeItem("provider");
         }
         else{
             emailAuth.logout();
-            // sessionStorage.removeItem("provider");
         }
         
     }

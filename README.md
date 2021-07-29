@@ -1,6 +1,6 @@
 # Authentication App Dev Challenge React Express Mongo Firebase Passport
 
-This is [the third challenge](https://devchallenges.io/challenges/N1fvBjQfhlkctmwj1tnw) of the [Full-stack](https://devchallenges.io/paths/full-stack-developer) path from devChallenges. The challenge was to create an auth app that supports different authentication providers like Google or Github. To accomplish that, I've used Firebase to provide authentication for google and github accounts, and Passport for email accounts.
+This is the [third challenge](https://devchallenges.io/challenges/N1fvBjQfhlkctmwj1tnw) of the [Full-stack](https://devchallenges.io/paths/full-stack-developer) path from devChallenges. The challenge was to create an auth app that supports different authentication providers like Google or Github. To accomplish that, I've used Firebase to provide authentication for google and github accounts, and Passport for email accounts.
 
 ## How to use
 
