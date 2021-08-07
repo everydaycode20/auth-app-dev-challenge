@@ -10,6 +10,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const csrfToken = require("../middleware/csrf_cookie").CsrfToken;
+const isAuth = require("../middleware/isAuth_email").isAuthEmail;
 
 const readFileType = require("../utils/readFileType").readFileType;
 
@@ -59,10 +60,9 @@ router.post("/signup", async (req, res, next) => {
     });
 });
 
-router.get("/profile", (req, res, next) => {
+router.get("/profile", isAuth, (req, res, next) => {
     
     const {_id, name, photo, bio, phone, email, authType} = req.user;
-    console.log(req.user);
     res.json({"status": true, "user": {"id": _id, name, photo, bio, phone, email, "provider": authType}});
 });
 
@@ -94,7 +94,7 @@ router.get("/logout", (req, res, next) => {
 
 router.post("/mail/upload-file", (req, res, next) => {
     const {_id} = req.user;
-    console.log(_id);
+    
     upload(req, res, err => {
         let buffer = req.file.buffer;
         

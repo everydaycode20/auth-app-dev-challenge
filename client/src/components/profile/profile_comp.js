@@ -8,7 +8,7 @@ import Skeleton from "./skeleton";
 export default function ProfileComp({user, logout, bio}) {
     
     const [dropdown, setDropdown] = useState(false);
-    console.log(user.photo === "");
+    
     function showDropdown() {
         setDropdown(true);
 

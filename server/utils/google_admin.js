@@ -1,6 +1,9 @@
 const admin = require('firebase-admin');
 
-const file = require("../auth-app-f4181-firebase-adminsdk-ay8k7-9e957fa79e.json");
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
+const file = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 /**
  * @returns admin SDK provided by Firebase

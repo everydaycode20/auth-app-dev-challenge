@@ -26,15 +26,15 @@ function Edit() {
     const [provider, setProvider] = useState("");
 
     const [showMessage, setShowMessage] = useState(false);
-    console.log(githubAuth.user, "UE EDIT");
+    
     useEffect(() => {
         const provider = sessionStorage.getItem("provider");
         
         if (provider === "google.com") {
             if (googleAuth.status !== null && googleAuth.status === true) {
-                console.log("true");
+                
                 setIsAllowed(true);
-                console.log(googleAuth.user);
+                
                 setUser(googleAuth.user);
                 setName(googleAuth.user.name);
                 setBio(googleAuth.user.bio);
@@ -98,7 +98,7 @@ function Edit() {
 
         if (provider === "google.com") {
             googleAuth.edit(name, bio, phone, email, googleAuth.user.id).then(data => {
-                console.log(data);
+                
                 if (data.status === true) {
                     setShowMessage(true);
 
@@ -110,7 +110,7 @@ function Edit() {
         }
         else if(provider === "github.com"){
             githubAuth.edit(name, bio, phone, email, githubAuth.user.id).then(data => {
-                console.log(data);
+                
                 if (data.status === true) {
                     setShowMessage(true);
 
@@ -121,9 +121,9 @@ function Edit() {
             });
         }
         else{
-            console.log(githubAuth.user, "USER EDIT");
+            
             emailAuth.edit(name, bio, phone, email, githubAuth.user.id).then(data => {
-                console.log(data);
+                
                 if (data.status === true) {
                     setShowMessage(true);
 
