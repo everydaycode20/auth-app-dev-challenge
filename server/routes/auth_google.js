@@ -34,7 +34,7 @@ routerGoogleAuth.get("/google/logout", (req, res, next) => {
     res.clearCookie("csrfToken");
     if (sessionCookie) {
         admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
-            console.log(decodedClaims, "32");
+            
             return admin.auth().revokeRefreshTokens(decodedClaims.sub);
         }).then(() => {
             

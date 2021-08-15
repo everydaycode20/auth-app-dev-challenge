@@ -63,7 +63,6 @@ routerGithubAuth.get("/github/profile", isVerified(admin), (req, res, next) => {
         });
     }).catch(error => {
         res.json({"status": false});
-        console.log(error);
     })
 
 });
@@ -76,7 +75,7 @@ routerGithubAuth.get("/github/logout", (req, res, next) => {
     res.clearCookie("csrfToken");
     if (sessionCookie) {
         admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
-            console.log(decodedClaims, "32");
+            
             return admin.auth().revokeRefreshTokens(decodedClaims.sub);
         }).then(() => {
             res.json({"status": false, "provider": "github.com"})

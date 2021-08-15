@@ -17,12 +17,10 @@ module.exports.isAuthorized = (admin) => {
         }
         else{
             admin.auth().verifySessionCookie(sessionCookie, true).then(decodedClaims => {
-                console.log(decodedClaims);
                 res.locals.userInfo = decodedClaims;
                 next();
             }).catch(error => {
                 res.json({"status": false, "message": "not authorized"});
-                console.log(error, "err");
             });
         }
 
